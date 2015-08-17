@@ -186,9 +186,9 @@ public class MapShell extends Applet
     }
 
     public final void mouseClicked(MouseEvent mouseevent) {
-        //int i = mouseevent.getX();
-        //int j = mouseevent.getY();
-    	//System.out.println("Click at " + i + "," +j);
+/*        int i = mouseevent.getX();
+        int j = mouseevent.getY();
+    	System.out.println("Click at " + i + "," +j);*/
     }
 
     public final void mousePressed(MouseEvent mouseevent) {

@@ -9,13 +9,15 @@ import java.net.URL;
 
 public class Main extends MapShell {
 	private static final long serialVersionUID = -5777509905922741616L;
-	static int initwidth = 	800;
-	static int initheight = 600;
+	static int initwidth = 	1580;
+	static int initheight = 800;
 	
 	
 	
 	int newwidth = initwidth;
 	int newheight = initheight;
+	double newwidthd = (double)newwidth;
+	double newheightd = (double)newheight;
 	
 	public static int mapversion = 0;
 	
@@ -65,12 +67,13 @@ public class Main extends MapShell {
         IoBuffer dataFile = new IoBuffer(mapfile.loadNestedDat("size.dat", null));
         startGameUnitx = dataFile.readShort();
         startGameUnity = dataFile.readShort();
-        somethingsizeX = dataFile.readShort();
-        somethingsizeY = dataFile.readShort();
+        Xtiles = dataFile.readShort();
+        Ytiles = dataFile.readShort();
+        //System.out.println(somethingsizeX+":"+somethingsizeY);
         panPositionX = 3200 - startGameUnitx;
-        panPositionY = (startGameUnity + somethingsizeY) - 3200;
+        panPositionY = (startGameUnity + Ytiles) - 3200;
         s = 180;
-        a = (somethingsizeX * s) / somethingsizeY;
+        a = (Xtiles * s) / Ytiles;
         e = newwidth - a - 5;
         g = newheight - s - 20;
         
@@ -93,16 +96,16 @@ public class Main extends MapShell {
         }
 
         byte abyte0[] = mapfile.loadNestedDat("underlay.dat", null);
-        byte abyte1[][] = new byte[somethingsizeX][somethingsizeY];
+        byte abyte1[][] = new byte[Xtiles][Ytiles];
         loadDatToUnderlay(abyte0, abyte1);
         byte abyte2[] = mapfile.loadNestedDat("overlay.dat", null);
-        terrainDatTypes = new int[somethingsizeX][somethingsizeY];
-        I = new byte[somethingsizeX][somethingsizeY];
+        terrainDatTypes = new int[Xtiles][Ytiles];
+        I = new byte[Xtiles][Ytiles];
         loadDatToTerrain(abyte2, terrainDatTypes, I);
         byte abyte3[] = mapfile.loadNestedDat("loc.dat", null);
-        Z = new byte[somethingsizeX][somethingsizeY];
-        B = new byte[somethingsizeX][somethingsizeY];
-        C = new byte[somethingsizeX][somethingsizeY];
+        Z = new byte[Xtiles][Ytiles];
+        B = new byte[Xtiles][Ytiles];
+        C = new byte[Xtiles][Ytiles];
         loadLocationDat(abyte3, Z, B, C);
         try {
             for (int i2 = 0; i2 < 100; i2++)
@@ -127,11 +130,16 @@ public class Main extends MapShell {
         o1 = new O(22, true, this);
         L = new O(26, true, this);
         M = new O(30, true, this);
-        terrainDatColors = new int[somethingsizeX][somethingsizeY];
+        terrainDatColors = new int[Xtiles][Ytiles];
         loadUnderlayData(abyte1, terrainDatColors);
+/*        for(int x=0;x<64;x++){
+            for(int y=0;y<64;y++){
+            	terrainDatColors[192+x][448+y]=9999;
+            }
+        }*/
         k = new B(a, s);
         k.I();
-        blitAllTheGraphics(0, 0, somethingsizeX, somethingsizeY, 0, 0, a, s);
+        blitAllTheGraphics(0, 0, Xtiles, Ytiles, 0, 0, a, s);
         Graphics2D.drawRectangleOutline(0, 0, a, s, 0);
         Graphics2D.drawRectangleOutline(1, 1, a - 2, s - 2, charAt);
         super.JI.createRasterizer();
@@ -141,13 +149,13 @@ public class Main extends MapShell {
         for (int i1 = 0; i1 < inputdata.length; ) {
             int j1 = (inputdata[i1++] & 0xff) * 64 - startGameUnitx;
             int k1 = (inputdata[i1++] & 0xff) * 64 - startGameUnity;
-            if (j1 > 0 && k1 > 0 && j1 + 64 < somethingsizeX && k1 + 64 < somethingsizeY) {
+            if (j1 > 0 && k1 > 0 && j1 + 64 < Xtiles && k1 + 64 < Ytiles) {
                 int l1 = 0;
                 while (l1 < 64) {
                     byte abyte4[] = linedata[l1 + j1];
                     byte abyte5[] = clutterdata[l1 + j1];
                     byte abyte6[] = icondata[l1 + j1];
-                    int k2 = somethingsizeY - k1 - 1;
+                    int k2 = Ytiles - k1 - 1;
                     for (int l2 = -64; l2 < 0; l2++) {
                         do {
                             int inputdataID = inputdata[i1++] & 0xff;
@@ -191,11 +199,11 @@ public class Main extends MapShell {
         for (int i1 = 0; i1 < abyte0.length; ) {
             int j1 = (abyte0[i1++] & 0xff) * 64 - startGameUnitx;
             int k1 = (abyte0[i1++] & 0xff) * 64 - startGameUnity;
-            if (j1 > 0 && k1 > 0 && j1 + 64 < somethingsizeX && k1 + 64 < somethingsizeY) {
+            if (j1 > 0 && k1 > 0 && j1 + 64 < Xtiles && k1 + 64 < Ytiles) {
                 int l1 = 0;
                 while (l1 < 64) {
                     byte abyte2[] = abyte1[l1 + j1];
-                    int i2 = somethingsizeY - k1 - 1;
+                    int i2 = Ytiles - k1 - 1;
                     for (int j2 = -64; j2 < 0; j2++)
                         abyte2[i2--] = abyte0[i1++];
 
@@ -212,12 +220,12 @@ public class Main extends MapShell {
         for (int i1 = 0; i1 < abyte0.length; ) {
             int j1 = (abyte0[i1++] & 0xff) * 64 - startGameUnitx;
             int k1 = (abyte0[i1++] & 0xff) * 64 - startGameUnity;
-            if (j1 > 0 && k1 > 0 && j1 + 64 < somethingsizeX && k1 + 64 < somethingsizeY) {
+            if (j1 > 0 && k1 > 0 && j1 + 64 < Xtiles && k1 + 64 < Ytiles) {
                 int l1 = 0;
                 while (l1 < 64) {
                     int ai1[] = ai[l1 + j1];
                     byte abyte2[] = abyte1[l1 + j1];
-                    int j2 = somethingsizeY - k1 - 1;
+                    int j2 = Ytiles - k1 - 1;
                     for (int k2 = -64; k2 < 0; k2++) {
                         byte byte1 = abyte0[i1++];
                         if (byte1 != 0) {
@@ -247,8 +255,8 @@ public class Main extends MapShell {
     }
 
     public final void loadUnderlayData(byte abyte0[][], int ai[][]) {
-        int i1 = somethingsizeX;
-        int j1 = somethingsizeY;
+        int i1 = Xtiles;
+        int j1 = Ytiles;
         int ai1[] = new int[j1];
         for (int k1 = 0; k1 < j1; k1++)
             ai1[k1] = 0;
@@ -410,9 +418,9 @@ public class Main extends MapShell {
             //dumps map to a raw image file?
             if (super.SI != null && i1 == 101) { 
                 System.out.println("Starting export...");
-                B b1 = new B(somethingsizeX * 2, somethingsizeY * 2);
+                B b1 = new B(Xtiles * 2, Ytiles * 2);
                 b1.I();
-                blitAllTheGraphics(0, 0, somethingsizeX, somethingsizeY, 0, 0, somethingsizeX * 2, somethingsizeY * 2);
+                blitAllTheGraphics(0, 0, Xtiles, Ytiles, 0, 0, Xtiles * 2, Ytiles * 2);
                 super.JI.createRasterizer();
                 int i2 = b1.I.length;
                 byte abyte0[] = new byte[i2 * 3];
@@ -426,13 +434,13 @@ public class Main extends MapShell {
 
                 System.out.println("Saving to disk");
                 try {
-                    BufferedOutputStream bufferedoutputstream = new BufferedOutputStream(new FileOutputStream((new StringBuilder()).append("map-").append(somethingsizeX * 2).append("-").append(somethingsizeY * 2).append("-rgb.raw").toString()));
+                    BufferedOutputStream bufferedoutputstream = new BufferedOutputStream(new FileOutputStream((new StringBuilder()).append("map-").append(Xtiles * 2).append("-").append(Ytiles * 2).append("-rgb.raw").toString()));
                     bufferedoutputstream.write(abyte0);
                     bufferedoutputstream.close();
                 } catch (Exception exception) {
                     exception.printStackTrace();
                 }
-                System.out.println((new StringBuilder()).append("Done export: ").append(somethingsizeX * 2).append(",").append(somethingsizeY * 2).toString());
+                System.out.println((new StringBuilder()).append("Done export: ").append(Xtiles * 2).append(",").append(Ytiles * 2).toString());
             }
         } while (true);
         if (super.isMouseDown == 1) {
@@ -505,8 +513,8 @@ public class Main extends MapShell {
                 k1 = super.GI;
             }
             if (i1 > e && k1 > g && i1 < e + a && k1 < g + s) {
-                panPositionX = ((i1 - e) * somethingsizeX) / a;
-                panPositionY = ((k1 - g) * somethingsizeY) / s;
+                panPositionX = ((i1 - e) * Xtiles) / a;
+                panPositionY = ((k1 - g) * Ytiles) / s;
                 l = -1;
                 needtoredraw = true;
             }
@@ -540,19 +548,19 @@ public class Main extends MapShell {
             needtoredraw = true;
             flashingloop--;
         }
-        i1 = panPositionX - (int) (635D / zoomlevel);
-        int l1 = panPositionY - (int) (503D / zoomlevel);
-        int j2 = panPositionX + (int) (635D / zoomlevel);
-        int k2 = panPositionY + (int) (503D / zoomlevel);
+        i1 = panPositionX - (int) (newwidthd / zoomlevel);
+        int l1 = panPositionY - (int) (newheightd / zoomlevel);
+        int j2 = panPositionX + (int) (newwidthd / zoomlevel);
+        int k2 = panPositionY + (int) (newheightd / zoomlevel);
 
         if (i1 < 48)
-            panPositionX = 48 + (int) (635D / zoomlevel);
+            panPositionX = 48 + (int) (newwidthd / zoomlevel);
         if (l1 < 48)
-            panPositionY = 48 + (int) (503D / zoomlevel);
-        if (j2 > somethingsizeX - 48)
-            panPositionX = somethingsizeX - 48 - (int) (635D / zoomlevel);
-        if (k2 > somethingsizeY - 48)
-            panPositionY = somethingsizeY - 48 - (int) (503D / zoomlevel);
+            panPositionY = 48 + (int) (newheightd / zoomlevel);
+        if (j2 > Xtiles - 48)
+            panPositionX = Xtiles - 48 - (int) (newwidthd / zoomlevel);
+        if (k2 > Ytiles - 48)
+            panPositionY = Ytiles - 48 - (int) (newheightd / zoomlevel);
     }
 
     public final void B() {
@@ -560,22 +568,22 @@ public class Main extends MapShell {
             needtoredraw = false;
             mkdir = 0;
             Graphics2D.resetPixels();
-            int visableWindowXstart = panPositionX - (int) (635D / zoomlevel);
-            int visibleWindowYstart = panPositionY - (int) (503D / zoomlevel);
-            int visibleWindowXend = panPositionX + (int) (635D / zoomlevel);
-            int visibleWindowYend = panPositionY + (int) (503D / zoomlevel);
+            int visableWindowXstart = panPositionX - (int) (newwidthd / zoomlevel);
+            int visibleWindowYstart = panPositionY - (int) (newheightd / zoomlevel);
+            int visibleWindowXend = panPositionX + (int) (newwidthd / zoomlevel);
+            int visibleWindowYend = panPositionY + (int) (newheightd / zoomlevel);
             blitAllTheGraphics(visableWindowXstart, visibleWindowYstart, visibleWindowXend, visibleWindowYend, 0, 0, newwidth, newheight);
             if (drawoverview) {  //if Overview/minimap is on
             	e = newwidth - 217;
             	g = newheight - 200;
                 k.Z(e, g);
-                Graphics2D.drawFilledRectangleAlhpa(e + (a * visableWindowXstart) / somethingsizeX, g + (s * visibleWindowYstart) / somethingsizeY, ((visibleWindowXend - visableWindowXstart) * a) / somethingsizeX, ((visibleWindowYend - visibleWindowYstart) * s) / somethingsizeY, 0xff0000, 128);
-                Graphics2D.drawRectangleOutline(e + (a * visableWindowXstart) / somethingsizeX, g + (s * visibleWindowYstart) / somethingsizeY, ((visibleWindowXend - visableWindowXstart) * a) / somethingsizeX, ((visibleWindowYend - visibleWindowYstart) * s) / somethingsizeY, 0xff0000);
+                Graphics2D.drawFilledRectangleAlhpa(e + (a * visableWindowXstart) / Xtiles, g + (s * visibleWindowYstart) / Ytiles, ((visibleWindowXend - visableWindowXstart) * a) / Xtiles, ((visibleWindowYend - visibleWindowYstart) * s) / Ytiles, 0xff0000, 128);
+                Graphics2D.drawRectangleOutline(e + (a * visableWindowXstart) / Xtiles, g + (s * visibleWindowYstart) / Ytiles, ((visibleWindowXend - visableWindowXstart) * a) / Xtiles, ((visibleWindowYend - visibleWindowYstart) * s) / Ytiles, 0xff0000);
                 if (flashingloop > 0 && flashingloop % 10 < 5) {
                     for (int i2 = 0; i2 < Q; i2++)
                         if (U[i2] == flashingID) {
-                            int k2 = e + (a * R[i2]) / somethingsizeX;
-                            int i3 = g + (s * T[i2]) / somethingsizeY;
+                            int k2 = e + (a * R[i2]) / Xtiles;
+                            int i3 = g + (s * T[i2]) / Ytiles;
                             Graphics2D.drawCircle(k2, i3, 2, 0xffff00, 256);  //draw minimap flashes
                         }
 
@@ -839,7 +847,7 @@ public class Main extends MapShell {
                 int k6 = labelXcoord[k5];
                 int k7 = labelYcoord[k5];
                 k6 -= startGameUnitx;
-                k7 = (startGameUnity + somethingsizeY) - k7;
+                k7 = (startGameUnity + Ytiles) - k7;
                 int j8 = i2 + ((k2 - i2) * (k6 - viewportstartx)) / (viewportendx - viewportstartx);
                 int l8 = j2 + ((l2 - j2) * (k7 - viewportstarty)) / (viewportendy - viewportstarty);
                 int j9 = w[k5];
@@ -901,12 +909,12 @@ public class Main extends MapShell {
 
         }
         if (append) {
-            for (int l5 = startGameUnitx / 64; l5 < (startGameUnitx + somethingsizeX) / 64; l5++) {
-                for (int l6 = startGameUnity / 64; l6 < (startGameUnity + somethingsizeY) / 64; l6++) {
+            for (int l5 = startGameUnitx / 64; l5 < (startGameUnitx + Xtiles) / 64; l5++) {
+                for (int l6 = startGameUnity / 64; l6 < (startGameUnity + Ytiles) / 64; l6++) {
                     int l7 = l5 * 64;
                     int k8 = l6 * 64;
                     l7 -= startGameUnitx;
-                    k8 = (startGameUnity + somethingsizeY) - k8;
+                    k8 = (startGameUnity + Ytiles) - k8;
                     int i9 = i2 + ((k2 - i2) * (l7 - viewportstartx)) / (viewportendx - viewportstartx);
                     int k9 = j2 + ((l2 - j2) * (k8 - 64 - viewportstarty)) / (viewportendy - viewportstarty);
                     int j10 = i2 + ((k2 - i2) * ((l7 + 64) - viewportstartx)) / (viewportendx - viewportstartx);
@@ -1516,8 +1524,8 @@ public class Main extends MapShell {
     public int mkdir;
     public static int startGameUnitx;
     public static int startGameUnity;
-    public static int somethingsizeX;
-    public static int somethingsizeY;
+    public static int Xtiles;
+    public static int Ytiles;
     public int read[];
     public int substring[];
     public int terrainDatColors[][];
